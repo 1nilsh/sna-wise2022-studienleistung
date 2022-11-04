@@ -1,0 +1,118 @@
+---
+title: "Studienleistung 1"
+author: "Hodys, Nils (2094436)"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+## Aufgabe 1: Allgemeine Fragen zu R
+
+### a) Wie eignet sich R, um Fragestellungen im ASN Kontext lösen zu können? Geben Sie dazu drei Anwendungsbeispiele an.
+
+foo bar
+
+### b) Welche grundlegenden Datenstrukturen gibt es in R und was sind deren Eigenschaften?
+- *Vector* Eine Sammlung mit fester Reihenfolge von Elementen gleichen Datentyps
+- *List* Eine Sammlung mit fester Reihenfolge von beliebigen Datentypen
+- *Dataframe* Eine zweidimensionale Tabelle von Daten. Eine Liste von Vector-Elementen
+- *Matrix* Eine zweidinensionale Tabelle von numerischen Daten
+- *Array* Eine n-dimensionale Sammlung
+- *Factor* Eine Datenstruktur für kategorische Daten
+
+### c) Wie können Sie in R einen Datentyp in einen anderen Datentyp umwandeln?
+
+`as.integer`, `as.character`, ...
+
+### d) In der Übung und im Skript haben Sie die grundlegende Syntax von R kennengelernt. Erläutern Sie, wofür folgender Befehle eingesetzt werden:
+
+1. `#` Einfacher Kommentar
+2. `""` String
+3. `<-` Zuweisung (nach links)
+4. `\` Escape-Character
+
+
+## Aufgabe 2: Fragen zu igraph
+
+### a) Aus der Übung ist Ihnen das Package igraph bekannt. Beschreiben sie kurz dessen Verwendung und Funktionen. Installieren und Laden Sie es anschließend in R Studio.
+
+igraph ist eine Sammlung von Tools zur Analyse von Netzwerken.
+
+```{r}
+# install.packages("igraph")
+library(igraph)
+```
+
+### b) Betrachten wir nun den fiktiven Ort Graphingen. Graphingen besteht aus 9 Ortsteilen. Erstellen sie zur Abbildung dafür zunächst den Graph g aus neun Knoten und keinen Kanten. Plotten Sie den Graphen.
+
+```{r}
+Graphingen <- make_empty_graph(n = 9, directed = FALSE)
+plot.igraph(Graphingen)
+```
+
+### c) Graphingen soll schöner werden. Ändern sie, die Form der Knoten in Quadrate und die Farbe in Grün.
+
+```{r}
+plot.igraph(Graphingen, vertex.shape="square", vertex.color="green")
+```
+
+### d) Graphingen bekommt neue öffentliche Verkehrsmittel. 8 Verbindungen kommen dabei durch die neuen Buslinien hinzu. Stellen sie die Buslinien in Form von Kanten zwischen beliebigen Knoten dar, sodass jeder Knoten mit dem Netzwerk verbunden ist.
+
+```{r}
+Graphingen <- add_edges(Graphingen, c(1,5, 2,5, 3,5, 4,6, 5,6, 7,8, 7,9, 1,7))
+plot.igraph(Graphingen, vertex.shape="square", vertex.color="green")
+```
+
+
+### e) Zuziehende gründen neue Vororte in Graphingen. Erhöhen sie die Anzahl der Knoten um 3 und binden Sie diese an das Bussystem an.
+
+```{r}
+Graphingen <- add_vertices(Graphingen, 3) %>%
+  add_edges(c(2,10, 2,11, 9,12))
+
+plot.igraph(Graphingen, vertex.shape="square", vertex.color="green")
+```
+
+### f) Durch eine Knappheit an Busfahrer:innen kann nicht jeder Ortsteil gleich häufig befahren werden. Stellen sie die Kanten im ursprünglichen Ortskern als starke Kanten und die Kanten zu den neuen Ortsteilen als schwache Kanten dar.
+
+```{r}
+Graphingen <- set_edge_attr(Graphingen, "weight", index = 1:8, 5)
+Graphingen <- set_edge_attr(Graphingen, "weight", index = 9:11, 2)
+
+plot.igraph(
+  Graphingen, vertex.shape="square",
+  vertex.color="green",
+  edge.width=E(Graphingen)$weight
+)
+```
+
+### g) Die Ortsteile von Graphingen werden nun in die Buszone A und Buszone B eingeteilt. Teilen Sie jeden Ortsteil in eine der Buszonen ein und fügen Sie die Gruppenzugehörigkeit als Attribut zu jedem Knoten hinzu.
+
+```{r}
+Graphingen <- set_vertex_attr(Graphingen, "buszone", index = 1:6, "A")
+Graphingen <- set_vertex_attr(Graphingen, "buszone", index = 7:12, "B")
+
+
+
+plot.igraph(
+  Graphingen,
+  vertex.shape="square",
+  vertex.color=rainbow(2, alpha=0.4)[as.factor(V(Graphingen)$buszone)],
+  edge.width=E(Graphingen)$weight
+)
+```
+
+### h) Erstellen Sie nun eine graphische Darstellung von Graphingen. Knoten sollen hier als Quadrate dargestellt und in der Farbe ihrer Zuteilung zu der Buszone visualisiert und ge- labelt werden (Sie können sich hier Farben aussuchen). Färben Sie außerdem die Kanten entsprechend ihres Kantengewichtes ein (Sie können sich hier Farben aussuchen).
+
+```{r}
+plot.igraph(
+  Graphingen,
+  vertex.label = sprintf("%s (%s)", V(Graphingen), V(Graphingen)$buszone),
+  vertex.label.cex = 0.8,
+  vertex.shape="square",
+  vertex.color=rainbow(2, alpha=0.4)[as.factor(V(Graphingen)$buszone)],
+  vertex.size=20,
+  edge.width=E(Graphingen)$weight,
+  edge.color=rainbow(5)[E(Graphingen)$weight]
+)
+```
+

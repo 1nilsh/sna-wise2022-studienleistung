@@ -21,6 +21,9 @@
 # RStudio files
 .Rproj.user/
 
+# Idea/Dataspell files
+.idea
+
 # produced vignettes
 vignettes/*.html
 vignettes/*.pdf

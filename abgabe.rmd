@@ -116,3 +116,77 @@ plot.igraph(
 )
 ```
 
+## Aufgabe 3: Import und Visualisierung eigener Daten
+
+### a) Laden Sie sich den Datensatz zu „Game of Thrones“ aus dem VC herunter. Importieren Sie den Datensatz in R. Achten Sie hier darauf, dass der Datensatz in einem csv Format vorliegt. Laden Sie daher den Datensatz als Dataframe in R und transformieren Sie die Da- ten dann zu einem ungerichteten Graphenobjekt.
+
+```{r}
+got_edgelist <- read.csv("got_dataset.csv", header = TRUE, sep = ";")
+GoT <- graph_from_data_frame(got_edgelist, directed = FALSE)
+```
+
+
+### b) Wie viele Knoten, wie viele Kanten hat der Graph? Welcher Knoten taucht am häufigsten als „Source“ und welcher am häufigsten als „Target“ auf? Welche beiden Charaktere haben die stärkste Beziehung?
+
+```{r}
+sprintf("%s Knoten", vcount(GoT))
+sprintf("%s Kanten", ecount(GoT))
+```
+
+
+### c) Sind alle Charaktere so miteinander verbunden, dass jeder Charakter jeden anderen Cha- rakter im Netzwerk erreichen kann?
+
+```{r}
+components(GoT)$no
+```
+
+Der Graph besteht aus 1 zusammenhängender component.
+
+### d) Plotten Sie das Netzwerk. Beachten Sie dazu folgende Vorgaben:
+o Verändern Sie die Margins des Plots mit der Funktion par() zu (1,1,1,1), so-
+dass der Graph in einer gut sichtbaren Größe dargestellt wird.
+o Plotten Sie den Graphen mit dem Layoutalgorithmus Fruchterman-Reingold.
+o Plotten Sie den Graphen als ungerichteten Graphen.
+o Verändern Sie die Farbe der Knoten zu gelb.
+o Verändern Sie die Farbe der Umrandung der Knoten zu blau.
+o Plotten Sie die Knoten mit der Größe 5.
+o Plotten Sie den Graphen ohne Labels.
+o Plotten Sie die Kanten mit einem Gewicht von 1, um alle Verbindungen gleich
+zu gewichten.
+
+```{r}
+fruchterman_reingold <- layout_with_fr(GoT)
+par(mar=c(1,1,1,1))
+plot.igraph(
+  GoT,
+  layout = fruchterman_reingold,
+  vertex.color = "yellow",
+  vertex.frame.color = "blue",
+  vertex.size = 5,
+  vertex.label = NA,
+  edge.width = 1
+)
+```
+
+
+### e) Nun sollen die Charaktere mit sehr starken Beziehungen gefunden werden. Reduzieren Sie dazu den Datensatz auf Charaktere, die mindestens ein Kantengewicht von 60 haben. Plotten Sie den Graphen mit den Angaben aus Aufgabe d). Verändern Sie hier nur die Größe der Knoten auf 10 und plotten Sie die Namen der Knoten mit gut lesbaren Labels. Was sind die Namen der Charaktere, die in diesem Graphen noch vorhanden sind?
+
+```{r}
+got_edgelist_strongties = got_edgelist[(got_edgelist$weight > 60),]
+GoT_strongties <- graph_from_data_frame(got_edgelist_strongties, directed = FALSE)
+
+fruchterman_reingold <- layout_with_fr(GoT_strongties)
+par(mar=c(1,1,1,1))
+
+plot.igraph(
+  GoT_strongties,
+  layout = fruchterman_reingold,
+  vertex.color = "yellow",
+  vertex.frame.color = "blue",
+  vertex.size = 10,
+  vertex.label.color = "black",
+  vertex.label.font = 2,
+  edge.width = 1
+)
+```
+

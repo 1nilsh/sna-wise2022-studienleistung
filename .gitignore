@@ -49,5 +49,5 @@ po/*~
 rsconnect/
 
 # Resources
-.csv
-.pdf
+*.csv
+*.pdf

@@ -1,23 +1,28 @@
 ---
 title: "Studienleistung 1"
-author: "Hodys, Nils (2094436)"
-date: "`r Sys.Date()`"
-output: pdf_document
+author:
+- "Götz, Lukas (2094420) [lukas-matthias.goetz@stud.uni-bamberg.de]"
+- "Hodys, Nils (2094436) [nils.hodys@stud.uni-bamberg.de]"
+date: "Datum: `r Sys.Date()`"
+output:
+  html_document:
+    df_print: paged
 ---
 
 ## Aufgabe 1: Allgemeine Fragen zu R
 
 ### a) Wie eignet sich R, um Fragestellungen im ASN Kontext lösen zu können? Geben Sie dazu drei Anwendungsbeispiele an.
 
-foo bar
+- Plotten von Netwerken anhand gegebener Werte
+- Statistische Auswertung (Bspw. Berechnung durchschnittlicher oder kürzester Pfadlängen)
+- Matritzenrechnung durchführen
 
 ### b) Welche grundlegenden Datenstrukturen gibt es in R und was sind deren Eigenschaften?
-- *Vector* Eine Sammlung mit fester Reihenfolge von Elementen gleichen Datentyps
+- *Vector* Eine eindimensionale, endliche Sammlung mit fester Reihenfolge von Elementen gleichen Datentyps
 - *List* Eine Sammlung mit fester Reihenfolge von beliebigen Datentypen
-- *Dataframe* Eine zweidimensionale Tabelle von Daten. Eine Liste von Vector-Elementen
-- *Matrix* Eine zweidinensionale Tabelle von numerischen Daten
-- *Array* Eine n-dimensionale Sammlung
-- *Factor* Eine Datenstruktur für kategorische Daten
+- *Dataframe* DataFrames: DataFrames sind vergleichbar mit Tabellen, in denen die Spalten die Variablennamen darstellen und die Zeilen die jeweiligen Werte. Sie sind Listen von Vektoren bzw. Faktoren mit der gleichen Länge.
+- *Matrix* Matrizen sind Erweiterungen von Vektoren, sie sind Vektoren mit Dimensionen
+- *Factor* Faktoren ähneln Vektoren und können kategoriale Daten enthalten
 
 ### c) Wie können Sie in R einen Datentyp in einen anderen Datentyp umwandeln?
 
@@ -35,7 +40,7 @@ foo bar
 
 ### a) Aus der Übung ist Ihnen das Package igraph bekannt. Beschreiben sie kurz dessen Verwendung und Funktionen. Installieren und Laden Sie es anschließend in R Studio.
 
-igraph ist eine Sammlung von Tools zur Analyse von Netzwerken.
+igraph ist eine Bibliothek mit entsprechenden Algorithmen und Strukturen zur Analyse von relationalen Daten und Netzwerken in R.
 
 ```{r}
 # install.packages("igraph")
@@ -101,7 +106,7 @@ plot.igraph(
 )
 ```
 
-### h) Erstellen Sie nun eine graphische Darstellung von Graphingen. Knoten sollen hier als Quadrate dargestellt und in der Farbe ihrer Zuteilung zu der Buszone visualisiert und ge- labelt werden (Sie können sich hier Farben aussuchen). Färben Sie außerdem die Kanten entsprechend ihres Kantengewichtes ein (Sie können sich hier Farben aussuchen).
+### h) Erstellen Sie nun eine graphische Darstellung von Graphingen. Knoten sollen hier als Quadrate dargestellt und in der Farbe ihrer Zuteilung zu der Buszone visualisiert und gelabelt werden (Sie können sich hier Farben aussuchen). Färben Sie außerdem die Kanten entsprechend ihres Kantengewichtes ein (Sie können sich hier Farben aussuchen).
 
 ```{r}
 plot.igraph(
@@ -129,12 +134,34 @@ GoT <- graph_from_data_frame(got_edgelist, directed = FALSE)
 ### b) Wie viele Knoten, wie viele Kanten hat der Graph? Welcher Knoten taucht am häufigsten als „Source“ und welcher am häufigsten als „Target“ auf? Welche beiden Charaktere haben die stärkste Beziehung?
 
 ```{r}
-sprintf("%s Knoten", vcount(GoT))
-sprintf("%s Kanten", ecount(GoT))
+sprintf("%s Knoten", vcount(GoT)) # Anzahl Knoten
+sprintf("%s Kanten", ecount(GoT)) # Anzahl Kanten
+
+library(dplyr)
+
+# Häufigste Source
+got_edgelist %>%
+  group_by(Source) %>%
+  summarize(count = length(Source)) %>%
+  arrange(desc(count)) %>%
+  filter(row_number()==1)
+
+# Häufigstes Target
+got_edgelist %>%
+  group_by(Target) %>%
+  summarize(count = length(Target)) %>%
+  arrange(desc(count)) %>%
+  filter(row_number()==1)
+
+# Größtes Kantengewicht
+got_edgelist %>%
+  arrange(desc(weight)) %>%
+  filter(row_number()==1)
+
 ```
 
 
-### c) Sind alle Charaktere so miteinander verbunden, dass jeder Charakter jeden anderen Cha- rakter im Netzwerk erreichen kann?
+### c) Sind alle Charaktere s- miteinander verbunden, dass jeder Charakter jeden anderen Charakter im Netzwerk erreichen kann?
 
 ```{r}
 components(GoT)$no
@@ -143,15 +170,15 @@ components(GoT)$no
 Der Graph besteht aus 1 zusammenhängender component.
 
 ### d) Plotten Sie das Netzwerk. Beachten Sie dazu folgende Vorgaben:
-o Verändern Sie die Margins des Plots mit der Funktion par() zu (1,1,1,1), so-
+- Verändern Sie die Margins des Plots mit der Funktion par() zu (1,1,1,1), so-
 dass der Graph in einer gut sichtbaren Größe dargestellt wird.
-o Plotten Sie den Graphen mit dem Layoutalgorithmus Fruchterman-Reingold.
-o Plotten Sie den Graphen als ungerichteten Graphen.
-o Verändern Sie die Farbe der Knoten zu gelb.
-o Verändern Sie die Farbe der Umrandung der Knoten zu blau.
-o Plotten Sie die Knoten mit der Größe 5.
-o Plotten Sie den Graphen ohne Labels.
-o Plotten Sie die Kanten mit einem Gewicht von 1, um alle Verbindungen gleich
+- Plotten Sie den Graphen mit dem Layoutalgorithmus Fruchterman-Reingold.
+- Plotten Sie den Graphen als ungerichteten Graphen.
+- Verändern Sie die Farbe der Knoten zu gelb.
+- Verändern Sie die Farbe der Umrandung der Knoten zu blau.
+- Plotten Sie die Knoten mit der Größe 5.
+- Plotten Sie den Graphen ohne Labels.
+- Plotten Sie die Kanten mit einem Gewicht von 1, um alle Verbindungen gleich
 zu gewichten.
 
 ```{r}
